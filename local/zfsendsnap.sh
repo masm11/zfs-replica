@@ -3,6 +3,7 @@
 set -e
 set -o pipefail
 
+SLACK_URL=''
 DATASET='zroot/home'
 
 lockfile=/etc/systemd/zfs/zfsendsnap.lock
@@ -22,15 +23,21 @@ last=$(cat $lastfile)
 now=$(date +replica-%Y-%m-%d_%H.%M.%S)
 echo $last ... $now
 
-zfs snapshot "${DATASET}@${now}"
-zfs send -R -I "@${last}" "${DATASET}@${now}" | gzip | netcat -N mike 3010 | grep -q done
+send_snap() {
+  zfs snapshot "${DATASET}@${now}"
+  zfs send -R -I "@${last}" "${DATASET}@${now}" | gzip | netcat -N mike 3010 | grep -q done
+}
 
-echo "${now}" > $lastfile
+if send_snap; then
+  echo "${now}" > $lastfile
 
-# exclude replica-from for now...
-zfs list -t snapshot -o name -r ${DATASET} | grep '@replica-' | grep -v replica-from | sed -e "/${now}/"',$d' | while read x; do
-  echo "zfs destroy $x"
-  zfs destroy "$x"
-done
+  # exclude replica-from for now...
+  zfs list -t snapshot -o name -r ${DATASET} | grep '@replica-' | grep -v replica-from | sed -e "/${now}/"',$d' | while read x; do
+    echo "zfs destroy $x"
+    zfs destroy "$x"
+  done
+else
+  curl -X POST --data-urlencode 'payload={"username":"ZFS replica", "text": "Failed.```'"$last ... $now"'```" }' $SLACK_URL || true
+fi
 
 rm -f $lockfile
