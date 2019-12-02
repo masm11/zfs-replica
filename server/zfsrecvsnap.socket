@@ -1,0 +1,10 @@
+[Unit]
+Description=ZFS snapshot receiver socket
+
+[Socket]
+ListenStream=[::]:3010
+#ListenStream=0.0.0.0:3010
+Accept=true
+
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=ZFS replication service
+After=network.target
+Requires=network.target
+
+[Service]
+ExecStart=/etc/systemd/zfs/zfsendsnap.sh

@@ -1,0 +1,8 @@
+[Unit]
+Description=ZFS snapshot receiver service
+
+[Service]
+ExecStart=/home/service/zfsrecvsnap/zfsrecvsnap.sh
+StandardInput=socket
+StandardOutput=socket
+StandardError=journal
