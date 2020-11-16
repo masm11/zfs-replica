@@ -4,4 +4,4 @@ After=network.target
 Requires=network.target
 
 [Service]
-ExecStart=/etc/systemd/zfs/zfsendsnap.sh
+ExecStart=/etc/systemd/zfs/zfsendsnap.rb zroot/home

@@ -2,7 +2,7 @@
 Description=ZFS snapshot receiver service
 
 [Service]
-ExecStart=/home/service/zfsrecvsnap/zfsrecvsnap.sh
+ExecStart=/home/service/zfsrecvsnap/zfsrecvsnap.rb
 StandardInput=socket
 StandardOutput=socket
 StandardError=journal
